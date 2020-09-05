@@ -9,12 +9,10 @@ Babble::Babble(QWidget *parent)
 
     // Create model
     model = new QStringListModel( this );
-/*
-    // Populate our model
-    model->setStringList( list );
-*/
+
     // Glue model and view together
     ui->listView->setModel( model );
+
     ui->listView->setEditTriggers( QAbstractItemView::NoEditTriggers );
 }
 

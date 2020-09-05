@@ -27,6 +27,5 @@ private:
     Ui::Babble *ui;
 
     QStringListModel *model;
-    QStringList list;
 };
 #endif // BABBLE_H
