@@ -1,6 +1,7 @@
 #ifndef BABBLE_H
 #define BABBLE_H
 
+// Qt Headers
 #include <QWidget>
 #include <QStringList>
 #include <QStringListModel>
@@ -18,14 +19,17 @@ public:
     Babble(QWidget *parent = nullptr);
     ~Babble();
 
+private:
+    void displayMessage( const QString & message );
+    void sendMessage( const QString & message );
+
 private slots:
     void on_sendButton_clicked();
-
     void on_lineEdit_returnPressed();
 
 private:
-    Ui::Babble *ui;
-
-    QStringListModel *model;
+    Ui::Babble *mUi;
+    QStringListModel *mModel;
 };
+
 #endif // BABBLE_H

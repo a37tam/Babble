@@ -2,41 +2,53 @@
 #include "./ui_babble.h"
 
 Babble::Babble(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::Babble)
+    : QWidget( parent ), mUi( new Ui::Babble ), mModel( new QStringListModel( this ) )
 {
-    ui->setupUi(this);
+    mUi->setupUi(this);
 
     // Create model
-    model = new QStringListModel( this );
+    //mModel = new QStringListModel( this );
 
     // Glue model and view together
-    ui->listView->setModel( model );
+    mUi->listView->setModel( mModel );
 
-    ui->listView->setEditTriggers( QAbstractItemView::NoEditTriggers );
+    // Prevent editing the items in view
+    mUi->listView->setEditTriggers( QAbstractItemView::NoEditTriggers );
+
+    // Give QLineEdit focus on startup
+    mUi->lineEdit->setFocus();
 }
 
 Babble::~Babble()
 {
-    delete model;
-    delete ui;
+    delete mModel;
+    delete mUi;
 }
 
 void Babble::on_sendButton_clicked()
 {
-    QString message = ui->lineEdit->text();
+    QString message = mUi->lineEdit->text();
     if( !message.isEmpty() )
     {
-        // Add new message to view
-        model->insertRow( model->rowCount() );
-        QModelIndex index = model->index( model->rowCount() - 1, 0 );
-        model->setData( index, message );
+        sendMessage( message );
+        displayMessage( message );
 
-        ui->lineEdit->clear();
+        mUi->lineEdit->clear();
     }
 }
 
 void Babble::on_lineEdit_returnPressed()
 {
     on_sendButton_clicked();
+}
+
+void Babble::displayMessage( const QString & message )
+{
+        mModel->insertRow( mModel->rowCount() );
+        QModelIndex index = mModel->index( mModel->rowCount() - 1, 0 );
+        mModel->setData( index, message );
+}
+
+void Babble::sendMessage( const QString & message )
+{
 }
