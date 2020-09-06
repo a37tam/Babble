@@ -4,9 +4,6 @@
 // Qt Headers
 #include <QApplication>
 
-// Network Programming Headers
-#include <asio.hpp>
-
 int main( int argc, char *argv[] )
 {
     QApplication a( argc, argv );
@@ -14,7 +11,31 @@ int main( int argc, char *argv[] )
     std::shared_ptr<asio::io_context> context = std::make_shared<asio::io_context>();
 
     Babble w( nullptr, context );
+
+#ifdef SERVER
+    w.getSession().establishService();
+#endif
+
+#ifdef CLIENT
+    w.getSession().establishConnection();
+#endif
+
+    // Show GUI
     w.show();
 
-    return a.exec();
+    // Initiate communication. Execute io_context's event loop
+    std::thread t( [&w, &context]()
+                   {
+                       w.getSession().readMessage();
+                       w.getSession().sendMessage();
+                       context->run();
+                   }
+                 );
+
+    // Execute application's event loop
+    int status = a.exec();
+
+    t.join();
+
+    return EXIT_SUCCESS;
 }

@@ -26,6 +26,11 @@ Babble::~Babble()
     delete mUi;
 }
 
+Session& Babble::getSession()
+{
+    return mSession;
+}
+
 void Babble::on_sendButton_clicked()
 {
     QString message = mUi->lineEdit->text();
@@ -52,4 +57,12 @@ void Babble::displayMessage( const QString & message )
 
 void Babble::sendMessage( const QString & message )
 {
+}
+
+void Babble::closeEvent( QCloseEvent *event )
+{
+    // Cancel all asynchronous operations associated with mSocket
+    mSocket.cancel();
+
+    event->accept();
 }

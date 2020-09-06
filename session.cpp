@@ -60,11 +60,16 @@ void Session::readMessage()
                             '\n',
                             [&]( const asio::error_code & e, const std::size_t bytes_transferred )
                             {
-                                if( e )
+                                if( e != 0 )
                                 {
                                     if( e == asio::error::eof )
                                     {
                                         std::printf( "Partner has left the chat.\n" );
+                                        return;
+                                    }
+                                    else if( e == asio::error::operation_aborted )
+                                    {
+                                        std::printf( "Cancelling async_read_until call.\n" );
                                         return;
                                     }
                                     else
@@ -97,10 +102,18 @@ void Session::sendMessage()
                        asio::buffer( mMessage + "\n" ),
                        [&]( const asio::error_code & e, const std::size_t bytes_transferred )
                        {
-                           if( e )
+                           if( e != 0 )
                            {
-                               std::printf( "[Error: %d] %s\n", e.value(), e.message().c_str() );
-                               exit( EXIT_FAILURE );
+                               if( e == asio::error::operation_aborted )
+                               {
+                                    std::printf( "Cancelling async_write call.\n" );
+                                    return;
+                               }
+                               else
+                               {
+                                   std::printf( "[Error: %d] %s\n", e.value(), e.message().c_str() );
+                                   exit( EXIT_FAILURE );
+                               }
                            }
                            else
                            {
