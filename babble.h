@@ -26,12 +26,12 @@ public:
 
 private:
     void displayMessage( const QString & message );
-
     void sendMessage( const QString & message );
 
     void closeEvent( QCloseEvent *event )
 
 private slots:
+    void on_lineEdit_textChanged( const QString &text );
     void on_sendButton_clicked();
     void on_lineEdit_returnPressed();
 

@@ -18,6 +18,9 @@ Babble::Babble( QWidget *parent, std::shared_ptr<asio::io_context> context )
 
     // Give QLineEdit focus on startup
     mUi->lineEdit->setFocus();
+
+    // Disable QPushButton on startup
+    mUi->sendButton->setEnabled( false );
 }
 
 Babble::~Babble()
@@ -31,16 +34,26 @@ Session& Babble::getSession()
     return mSession;
 }
 
+void Babble::on_lineEdit_textChanged( const QString &text )
+{
+    if( message.isEmpty() )
+    {
+        mUi->sendButton->setEnabled( false );
+    }
+    else
+    {
+        mUi->sendButton->setEnabled( true );
+    }
+}
+
 void Babble::on_sendButton_clicked()
 {
     QString message = mUi->lineEdit->text();
-    if( !message.isEmpty() )
-    {
-        sendMessage( message );
-        displayMessage( message );
 
-        mUi->lineEdit->clear();
-    }
+    sendMessage( message );
+    displayMessage( message );
+
+    mUi->lineEdit->clear();
 }
 
 void Babble::on_lineEdit_returnPressed()
