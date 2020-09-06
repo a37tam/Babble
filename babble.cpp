@@ -1,13 +1,14 @@
+// Local Headers
 #include "babble.h"
 #include "./ui_babble.h"
 
-Babble::Babble(QWidget *parent)
-    : QWidget( parent ), mUi( new Ui::Babble ), mModel( new QStringListModel( this ) )
+Babble::Babble( QWidget *parent, std::shared_ptr<asio::io_context> context )
+    : QWidget( parent ),
+      mUi( new Ui::Babble ),
+      mModel( new QStringListModel( this ) ),
+      mSession( context )
 {
-    mUi->setupUi(this);
-
-    // Create model
-    //mModel = new QStringListModel( this );
+    mUi->setupUi( this );
 
     // Glue model and view together
     mUi->listView->setModel( mModel );

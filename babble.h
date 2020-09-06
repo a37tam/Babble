@@ -1,11 +1,20 @@
 #ifndef BABBLE_H
 #define BABBLE_H
 
+// Local Headers
+#include "session.h"
+
 // Qt Headers
 #include <QWidget>
 #include <QStringList>
 #include <QStringListModel>
 #include <QAbstractItemView>
+
+// Network Programming Headers
+#include <asio.hpp>
+
+// Standard Library Headers
+#include <memory>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Babble; }
@@ -16,7 +25,7 @@ class Babble : public QWidget
     Q_OBJECT
 
 public:
-    Babble(QWidget *parent = nullptr);
+    Babble( QWidget *parent, std::shared_ptr<asio::io_context> context );
     ~Babble();
 
 private:
@@ -29,7 +38,10 @@ private slots:
 
 private:
     Ui::Babble *mUi;
+
     QStringListModel *mModel;
+
+    Session mSession;
 };
 
 #endif // BABBLE_H

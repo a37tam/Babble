@@ -1,9 +1,9 @@
+// Local Headers
+#include "session.h"
+
 // Standard Library Headers
 #include <cstdio>
 #include <cstdlib>
-
-// Local Headers
-#include "session.h"
 
 using asio::ip::tcp;
 
@@ -69,7 +69,7 @@ void Session::readMessage()
                                     }
                                     else
                                     {
-                                        std::printf( "[Error: %d] %s\n", e.value(), e.message() );
+                                        std::printf( "[Error: %d] %s\n", e.value(), e.message().c_str() );
                                         exit( EXIT_FAILURE );
                                     }
                                 }
@@ -80,7 +80,7 @@ void Session::readMessage()
                                     std::string message( asio::buffers_begin( bufs ),
                                                          asio::buffers_begin( bufs ) + mBuffer.size() );
 
-                                    std::printf( "%s\n", message );
+                                    std::printf( "%s\n", message.c_str() );
 
                                     // Clear buffer
                                     mBuffer.consume( bytes_transferred );
@@ -91,7 +91,7 @@ void Session::readMessage()
                          );
 }
 
-void Babble::sendMessage()
+void Session::sendMessage()
 {
     asio::async_write( mSocket,
                        asio::buffer( mMessage + "\n" ),
@@ -99,7 +99,7 @@ void Babble::sendMessage()
                        {
                            if( e )
                            {
-                               std::printf( "[Error: %d] %s\n", e.value(), e.message() );
+                               std::printf( "[Error: %d] %s\n", e.value(), e.message().c_str() );
                                exit( EXIT_FAILURE );
                            }
                            else
