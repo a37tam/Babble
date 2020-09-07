@@ -4,6 +4,9 @@
 // Qt Headers
 #include <QApplication>
 
+// Standard Library Headers
+#include <thread>
+
 int main( int argc, char *argv[] )
 {
     QApplication a( argc, argv );
@@ -12,27 +15,24 @@ int main( int argc, char *argv[] )
 
     Babble w( nullptr, context );
 
+    std::thread t( [&w, &context]()
+                   {
 #ifdef SERVER
-    w.getSession().establishService();
+                       w.establishService();
 #endif
 
 #ifdef CLIENT
-    w.getSession().establishConnection();
+                       w.establishConnection();
 #endif
 
-    // Show GUI
-    w.show();
-
-    // Initiate communication. Execute io_context's event loop
-    std::thread t( [&w, &context]()
-                   {
-                       w.getSession().readMessage();
-                       w.getSession().sendMessage();
+                       w.readMessage();
+                       w.sendMessage();
                        context->run();
                    }
                  );
 
-    // Execute application's event loop
+    w.show();
+
     int status = a.exec();
 
     t.join();
