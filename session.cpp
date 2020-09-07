@@ -65,6 +65,10 @@ void Session::readMessage()
                                     if( e == asio::error::eof )
                                     {
                                         std::printf( "Partner has left the chat.\n" );
+
+                                        // Cancel asynchronous sendMessage call
+                                        mSocket.cancel();
+
                                         return;
                                     }
                                     else if( e == asio::error::operation_aborted )
@@ -85,7 +89,9 @@ void Session::readMessage()
                                     std::string message( asio::buffers_begin( bufs ),
                                                          asio::buffers_begin( bufs ) + mBuffer.size() );
 
-                                    std::printf( "%s\n", message.c_str() );
+                                    // TODO: Refactor code so that you can call Babble::displayMessage( const QString & message )
+                                    //QString m = QString::fromStdString( message );
+                                    //Babbble::displayMessage( m );
 
                                     // Clear buffer
                                     mBuffer.consume( bytes_transferred );

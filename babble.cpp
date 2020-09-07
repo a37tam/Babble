@@ -70,6 +70,9 @@ void Babble::displayMessage( const QString & message )
 
 void Babble::sendMessage( const QString & message )
 {
+    displayMessage( message );
+
+    mSession.mMessage = message.toStdString();
 }
 
 void Babble::closeEvent( QCloseEvent *event )
