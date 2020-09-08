@@ -7,7 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 # Copy shell script to build directory.
-configure_file(RunBabbleLocally.sh RunBabbleLocally.sh COPYONLY)
+configure_file(runBabbleLocally.sh runBabbleLocally.sh COPYONLY)
 
 # Configure Qt.
 find_package(Qt5 COMPONENTS Widgets REQUIRED)

@@ -93,6 +93,10 @@ void Babble::readMessage()
                                     if( e == asio::error::eof )
                                     {
                                         std::printf( "Partner has left the chat.\n" );
+                                        
+                                        // Invoke QCloseEvent handler (Babble::closeEvent)
+                                        close();
+
                                         return;
                                     }
                                     else if( e == asio::error::operation_aborted )
