@@ -15,7 +15,8 @@ int main( int argc, char *argv[] )
 
     Babble w( nullptr, context );
 
-    std::thread t( [&w, &context]()
+    // Initiate client/server communication
+    std::thread t( [&]()
                    {
 #ifdef SERVER
                        w.establishService();
@@ -24,16 +25,18 @@ int main( int argc, char *argv[] )
 #ifdef CLIENT
                        w.establishConnection();
 #endif
-
+                       // Asynchronously read messages
                        w.readMessage();
-                       w.sendMessage();
+
+                       // Run io_context's event loop
                        context->run();
                    }
                  );
 
     w.show();
 
-    int status = a.exec();
+    // Run application's event loop
+    a.exec();
 
     t.join();
 

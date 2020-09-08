@@ -3,7 +3,6 @@
 
 // Qt Headers
 #include <QWidget>
-#include <QStringList>
 #include <QStringListModel>
 #include <QAbstractItemView>
 #include <QCloseEvent>
@@ -34,25 +33,33 @@ public:
     Babble( QWidget *parent, std::shared_ptr<asio::io_context> context );
     ~Babble();
 
-    // Communication
+    // Setup server and accept to client's connection request
     void establishService();
+
+    // Setup client and connect to server
     void establishConnection();
 
-    // Socket calls
+    // Read data from TCP socket
     void readMessage();
+
+    // Write data to TCP socket
     void sendMessage();
 
 private:
-    // View
+    // Display text messages on the GUI
     void displayMessage( const QString & message );
+
+    //
     void writeMessage( const QString & message );
 
-    // Cleanup
+    // Cleanup. Cancel all asynchronous jobs
     void closeEvent( QCloseEvent * event );
 
 private slots:
     void on_lineEdit_textChanged( const QString & text );
+
     void on_sendButton_clicked();
+
     void on_lineEdit_returnPressed();
 
 private:

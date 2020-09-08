@@ -1,8 +1,11 @@
 // Local Headers
 #include "babble.h"
+
+// Qt Generated Header for GUI. Located in build directory
 #include "./ui_babble.h"
 
 // Standard Library Headers
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 
@@ -19,7 +22,7 @@ Babble::Babble( QWidget *parent, std::shared_ptr<asio::io_context> context )
     // Glue model and view together
     mUi->listView->setModel( mModel );
 
-    // Disable editing items in the QListView
+    // Prevent displayed messages from being edited
     mUi->listView->setEditTriggers( QAbstractItemView::NoEditTriggers );
 
     // Give QLineEdit focus on startup
@@ -29,6 +32,8 @@ Babble::Babble( QWidget *parent, std::shared_ptr<asio::io_context> context )
     mUi->sendButton->setEnabled( false );
 
     // Resolves "bind: Address already in use" error
+    // Allows another socket to bind to the same local endpoint without 
+    // having to wait for the OS to fully close the previously bound socket
     asio::socket_base::reuse_address option{ true };
 
 #ifdef SERVER
@@ -71,7 +76,7 @@ void Babble::establishConnection()
         asio::ip::tcp::resolver::query resolver_query( defaults::server, defaults::service );
         asio::ip::tcp::resolver::iterator endpoints = resolver.resolve( resolver_query );
 
-        // Connect to the server using any one of the available interfaces
+        // Connect client to the server using any one of the available interfaces
         asio::connect( mSocket, endpoints );
 }
 
@@ -84,19 +89,15 @@ void Babble::readMessage()
                             {
                                 if( e )
                                 {
+                                    // One side of the connection is terminated
                                     if( e == asio::error::eof )
                                     {
                                         std::printf( "Partner has left the chat.\n" );
-
-                                        // Cancel asynchronous sendMessage call
-                                        mSocket.cancel();
-                                        std::printf( "Cancelling async_read_until call.\n" );
-
                                         return;
                                     }
                                     else if( e == asio::error::operation_aborted )
                                     {
-                                        std::printf( "Cancelling async_read_until call.\n" );
+                                        std::printf( "Cancelling async_read_until.\n" );
                                         return;
                                     }
                                     else
@@ -111,6 +112,9 @@ void Babble::readMessage()
                                     auto bufs = mBuffer.data();
                                     std::string message( asio::buffers_begin( bufs ),
                                                          asio::buffers_begin( bufs ) + mBuffer.size() );
+
+                                    // Remove trailing newline character
+                                    message.erase(std::remove(message.begin(), message.end(), '\n'), message.end());
 
                                     QString m = QString::fromStdString( message );
                                     displayMessage( m );
@@ -132,6 +136,7 @@ void Babble::sendMessage()
                        {
                            if( e )
                            {
+                               // All asynchronous operations are cancelled
                                if( e == asio::error::operation_aborted )
                                {
                                     std::printf( "Cancelling async_write call.\n" );
@@ -143,29 +148,26 @@ void Babble::sendMessage()
                                    exit( EXIT_FAILURE );
                                }
                            }
-                           else
-                           {
-                               sendMessage();
-                           }
                        }
                      );
 }
 
 void Babble::displayMessage( const QString & message )
 {
-        mModel->insertRow( mModel->rowCount() );
-        QModelIndex index = mModel->index( mModel->rowCount() - 1, 0 );
-        mModel->setData( index, message );
+    mModel->insertRow( mModel->rowCount() );
+    QModelIndex index = mModel->index( mModel->rowCount() - 1, 0 );
+    mModel->setData( index, message );
 }
 
 void Babble::writeMessage( const QString & message )
 {
     mMessage = message.toStdString();
+    sendMessage();
 }
 
 void Babble::closeEvent( QCloseEvent *event )
 {
-    // Cancel all asynchronous operations associated with mSocket
+    // Cancel all asynchronous operations
     mSocket.cancel();
 
     event->accept();

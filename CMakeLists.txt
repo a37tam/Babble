@@ -13,7 +13,7 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 set(ASIO_INC "/opt/asio/include" CACHE PATH "Path to standalone Asio headers.")
 
 #################################################################################
-# Server executable
+# Build server executable.
 
 add_executable(BabbleServer
                main.cpp
@@ -45,7 +45,7 @@ target_compile_definitions(BabbleServer
                            -DSERVER
                           )
 ################################################################################
-# Client executable
+# Build client executable.
 
 add_executable(BabbleClient
                main.cpp
