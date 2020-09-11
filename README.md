@@ -2,7 +2,7 @@
 Babble is a cross-platform instant messaging app which lets users communicate using text messages.                               
 
 
-![combined-image](img/combined-image.png)
+![Conversation](Images/conversation.png)
 
 
 ## Description
